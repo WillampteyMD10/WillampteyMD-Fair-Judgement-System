@@ -1,15 +1,8 @@
-[07.08.2026 16:17] William Lamptey: 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
-[07.08.2026 17:15] William Lamptey: {
-  "builds": [
-    {
-      "src": "api/index.py",
-      "use": "@vercel/python"
-    }
-  ],
-  "routes": [
+{
+  "rewrites": [
     {
       "source": "/(.*)",
-      "destination": "api/index.py"
+      "destination": "/api/index"
     }
   ]
 }
