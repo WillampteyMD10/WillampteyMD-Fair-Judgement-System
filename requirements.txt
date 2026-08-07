@@ -4,3 +4,4 @@ pydantic==2.7.4
 openai==1.35.3
 psycopg2-binary==2.9.9
 
+
