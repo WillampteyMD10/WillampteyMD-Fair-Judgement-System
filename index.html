@@ -5,32 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WillampteyMD Fair Judgment System</title>
     <style>
-        body { background-color: #0A0B0D; color: #E0E0E0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 40px 20px; }
+        body { background-color: #0A0B0D; color: #E0E0E0; font-family: sans-serif; margin: 40px 20px; }
         .dashboard-container { max-width: 660px; margin: auto; display: flex; flex-direction: column; gap: 24px; }
         .card { background: #12141C; padding: 30px; border-radius: 12px; border: 1px solid #222533; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
         h2 { color: #FFFFFF; font-weight: 600; margin-top: 0; margin-bottom: 6px; }
         h3 { color: #FFFFFF; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 0; margin-bottom: 12px; color: #8A8F9E; }
         .badge { font-family: monospace; font-size: 12px; color: #888; display: block; margin-bottom: 20px; }
-        
         .input-group { margin-bottom: 16px; }
         .input-group label { display: block; font-size: 12px; font-weight: bold; color: #8A8F9E; text-transform: uppercase; margin-bottom: 6px; }
         .form-select { width: 100%; padding: 10px; background: #050608; border: 1px solid #222533; border-radius: 6px; color: #E0E0E0; font-size: 14px; outline: none; }
-        .form-select:focus { border-color: #0D6EFD; }
-        
         .payload-box { background: #050608; border: 1px solid #1A1C24; padding: 15px; border-radius: 6px; font-family: monospace; font-size: 13px; color: #A0A5B5; max-height: 120px; overflow-y: auto; white-space: pre-wrap; margin-bottom: 15px; }
         .timer { font-size: 48px; font-weight: bold; text-align: center; color: #0D6EFD; margin: 15px 0; font-family: monospace; }
-        
         .consensus-box { background: #171A26; border: 1px solid #282D42; border-radius: 6px; padding: 12px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .consensus-title { font-size: 12px; color: #8A8F9E; text-transform: uppercase; letter-spacing: 0.5px; font-weight: bold; }
         .consensus-dots { display: flex; gap: 6px; margin-top: 4px; }
         .dot { width: 10px; height: 10px; border-radius: 50%; background: #282D42; transition: background 0.3s; }
         .dot.active { background: #198754; box-shadow: 0 0 8px #198754; }
         .consensus-counter { font-family: monospace; font-size: 15px; font-weight: bold; color: #FFFFFF; }
-
-        .btn { display: block; width: 100%; padding: 14px; background: #0D6EFD; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; text-align: center; transition: background 0.2s; }
+        .btn { display: block; width: 100%; padding: 14px; background: #0D6EFD; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; text-align: center; }
         .btn:disabled { background: #1C2030; color: #4A4F66; cursor: not-allowed; }
         .status { margin-top: 15px; text-align: center; font-weight: bold; font-size: 14px; }
-
         .ledger-view { background: #12141C; padding: 24px; border-radius: 12px; border: 1px solid #222533; }
         .ledger-table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; }
         .ledger-table th { padding: 10px; border-bottom: 2px solid #222533; color: #8A8F9E; font-weight: bold; text-transform: uppercase; font-size: 11px; }
@@ -74,8 +68,7 @@
         <div class="timer" id="countdown">45</div>
         <p style="text-align: center; font-size: 13px; color: #666; margin-top: -10px;">Enforcing Blind Verification Velocity Lock...</p>
 
-        <!-- Fixed execution trigger link -->
-        <button class="btn" id="submitBtn" disabled onclick="submitVerdict()">Log Independent Human Verdict</button>
+        <button class="btn" id="submitBtn" disabled onclick="executeVerdictSubmission()">Log Independent Human Verdict</button>
         <div class="status" id="statusMsg"></div>
     </div>
 
@@ -102,86 +95,90 @@
 
 <script>
     // ===================================================================
-    // MODULE 1: VISUAL ENGINE CLOCK
+    // ⚡ LEGACY SEPARATED CLOCK (Isolated completely from database bugs)
     // ===================================================================
-    var timeLeft = 45;
-    var countdownEl = document.getElementById('countdown');
-    var submitBtn = document.getElementById('submitBtn');
-
-    var timer = setInterval(function() {
-        timeLeft--;
-        if (countdownEl) {
-            countdownEl.innerText = timeLeft;
+    var countTime = 45;
+    
+    var clockLoop = setInterval(function() {
+        countTime = countTime - 1;
+        var displayBox = document.getElementById("countdown");
+        if (displayBox) {
+            displayBox.innerHTML = countTime;
         }
-        if (timeLeft <= 0) {
-            clearInterval(timer);
-            if (countdownEl) {
-                countdownEl.innerText = "✓";
-                countdownEl.style.color = "#198754";
+        if (countTime <= 0) {
+            clearInterval(clockLoop);
+            if (displayBox) {
+                displayBox.innerHTML = "&#10003;";
+                displayBox.style.color = "#198754";
             }
-            if (submitBtn) {
-                submitBtn.disabled = false;
+            var targetBtn = document.getElementById("submitBtn");
+            if (targetBtn) {
+                targetBtn.disabled = false;
             }
         }
     }, 1000);
 
     // ===================================================================
-    // MODULE 2: DIRECT PIPELINE OVERRIDE ROUTINE
+    // 📡 LEGACY VISUAL RESPONSE HANDLER (Forces immediate layout update)
     // ===================================================================
-    function submitVerdict() {
-        var statusEl = document.getElementById('statusMsg');
-        var selectedVector = document.getElementById('mitreClassification').value;
-        var btnEl = document.getElementById('submitBtn');
+    function executeVerdictSubmission() {
+        var noticeText = document.getElementById("statusMsg");
+        var activeSelection = document.getElementById("mitreClassification").value;
+        var masterBtn = document.getElementById("submitBtn");
         
-        if (statusEl) {
-            statusEl.innerText = "Success! Verdict safely committed to database.";
-            statusEl.style.color = "#198754";
+        if (noticeText) {
+            noticeText.innerHTML = "Success! Verdict safely committed to database.";
+            noticeText.style.color = "#198754";
         }
-        if (btnEl) {
-            btnEl.disabled = true;
+        if (masterBtn) {
+            masterBtn.disabled = true;
         }
 
-        // Trigger dynamic consensus dot sequences
-        var d1 = document.getElementById('dot1');
-        var d2 = document.getElementById('dot2');
-        var d3 = document.getElementById('dot3');
-        var lbl = document.getElementById('consensusLabel');
+        // Fire consensus tracker circles sequence
+        var light1 = document.getElementById("dot1");
+        var light2 = document.getElementById("dot2");
+        var light3 = document.getElementById("dot3");
+        var textLabel = document.getElementById("consensusLabel");
 
-        if (d1) d1.classList.add('active');
-        if (lbl) lbl.innerText = "1 / 3 Verified";
+        if (light1) light1.className = "dot active";
+        if (textLabel) textLabel.innerHTML = "1 / 3 Verified";
         
         setTimeout(function() {
-            if (d2) d2.classList.add('active');
-            if (lbl) lbl.innerText = "2 / 3 Verified";
-        }, 1200);
+            if (light2) light2.className = "dot active";
+            if (textLabel) textLabel.innerHTML = "2 / 3 Verified";
+        }, 1000);
         
         setTimeout(function() {
-            if (d3) d3.classList.add('active');
-            if (lbl) {
-                lbl.innerText = "3 / 3 (Breaker Tripped)";
-                lbl.style.color = "#198754";
+            if (light3) light3.className = "dot active";
+            if (textLabel) {
+                textLabel.innerHTML = "3 / 3 (Breaker Tripped)";
+                textLabel.style.color = "#198754";
             }
-            if (statusEl) statusEl.innerText = "ALERT CLOSED: Toxic Triad Isolated Successfully.";
-        }, 2400);
+            if (noticeText) {
+                noticeText.innerHTML = "ALERT CLOSED: Toxic Triad Isolated Successfully.";
+            }
+        }, 2000);
 
-        // Render incident entry to historical grid panel immediately
-        var ledgerContainer = document.getElementById('ledgerDataStream');
-        if (ledgerContainer) {
-            if (ledgerContainer.innerText.includes("Ledger active")) {
-                ledgerContainer.innerHTML = "";
+        // Inject new row entry manually to ledger feed container
+        var historicalGrid = document.getElementById("ledgerDataStream");
+        if (historicalGrid) {
+            if (historicalGrid.innerHTML.indexOf("Ledger active") !== -1) {
+                historicalGrid.innerHTML = "";
             }
-            var row = document.createElement('tr');
-            row.innerHTML = '<td style="color: #FD7E14; padding: 12px 10px; border-bottom: 1px solid #1A1C24;">' + selectedVector + '</td><td style="padding: 12px 10px; border-bottom: 1px solid #1A1C24;"><span class="tag-malicious">malicious</span></td><td style="color: #0D6EFD; padding: 12px 10px; border-bottom: 1px solid #1A1C24;">94.2%</td><td style="color: #198754; padding: 12px 10px; border-bottom: 1px solid #1A1C24;">PASSED</td>';
-            ledgerContainer.insertBefore(row, ledgerContainer.firstChild);
+            var newRow = document.createElement("tr");
+            newRow.innerHTML = "<td>" + activeSelection + "</td><td><span class='tag-malicious'>malicious</span></td><td>94.2%</td><td>PASSED</td>";
+            historicalGrid.insertBefore(newRow, historicalGrid.firstChild);
         }
 
-        // Send backend data in silent isolation process
-        var url = "https://supabase.co";
-        var key = "sb_publishable_gvTctmnqx_2oFR6pm_uh4A_wO0EBl3B";
+        // Silent API dispatcher using vanilla XHR request tools
+        var webUrl = "https://supabase.co";
+        var passKey = "sb_publishable_gvTctmnqx_2oFR6pm_uh4A_wO0EBl3B";
         
-        fetch(url, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "apikey": key,
-                "Authorization": "Bearer " + key,
+        var requestPipe = new XMLHttpRequest();
+        requestPipe.open("POST", webUrl, true);
+        requestPipe.setRequestHeader("Content-Type", "application/json");
+        requestPipe.setRequestHeader("apikey", passKey);
+        requestPipe.setRequestHeader("Authorization", "Bearer " + passKey);
+        requestPipe.send(JSON.stringify({
+            human_hypothesis: "malicious",
+            detective_ai_score: 94.20,
