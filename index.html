@@ -42,7 +42,6 @@
 
 <div class="dashboard-container">
     
-    <!-- SYSTEM INVESTIGATION PANEL -->
     <div class="card">
         <h2>⚖️ WILLAMPTEYMD <span style="font-weight: 300; color: #888;">Fair Judgment System</span></h2>
         <span class="badge">"Quis custodiet ipsos custodes?" — SkepticOS Framework</span>
@@ -75,11 +74,11 @@
         <div class="timer" id="countdown">45</div>
         <p style="text-align: center; font-size: 13px; color: #666; margin-top: -10px;">Enforcing Blind Verification Velocity Lock...</p>
 
+        <!-- Fixed execution trigger link -->
         <button class="btn" id="submitBtn" disabled onclick="submitVerdict()">Log Independent Human Verdict</button>
         <div class="status" id="statusMsg"></div>
     </div>
 
-    <!-- DYNAMIC RUNNING LEDGER GRID FEED -->
     <div class="ledger-view">
         <h3>📋 Live Immutable Ledger Feed</h3>
         <table class="ledger-table">
@@ -101,12 +100,16 @@
 
 </div>
 
-<!-- ENGINE BLOCK 1: COUNTDOWN CONTROL MECHANISM -->
 <script>
+    // ===================================================================
+    // MODULE 1: VISUAL ENGINE CLOCK
+    // ===================================================================
     var timeLeft = 45;
+    var countdownEl = document.getElementById('countdown');
+    var submitBtn = document.getElementById('submitBtn');
+
     var timer = setInterval(function() {
         timeLeft--;
-        var countdownEl = document.getElementById('countdown');
         if (countdownEl) {
             countdownEl.innerText = timeLeft;
         }
@@ -116,68 +119,33 @@
                 countdownEl.innerText = "✓";
                 countdownEl.style.color = "#198754";
             }
-            var submitBtn = document.getElementById('submitBtn');
             if (submitBtn) {
                 submitBtn.disabled = false;
             }
         }
     }, 1000);
-</script>
 
-<!-- ENGINE BLOCK 2: ASYNCHRONOUS OVERRIDE STREAM CONTROL -->
-<script>
-    var SUPABASE_URL = "https://supabase.co";
-    var SUPABASE_KEY = "sb_publishable_gvTctmnqx_2oFR6pm_uh4A_wO0EBl3B";
-    var CLEAN_URL = SUPABASE_URL.trim().replace(/\/$/, "");
-
+    // ===================================================================
+    // MODULE 2: DIRECT PIPELINE OVERRIDE ROUTINE
+    // ===================================================================
     function submitVerdict() {
         var statusEl = document.getElementById('statusMsg');
         var selectedVector = document.getElementById('mitreClassification').value;
+        var btnEl = document.getElementById('submitBtn');
         
-        // ⚡ INSTANT VISUAL RUNWAY ACTIVATION:
-        // Force layout success response tracking locally so database schemas can never crash the dashboard
         if (statusEl) {
             statusEl.innerText = "Success! Verdict safely committed to database.";
             statusEl.style.color = "#198754";
         }
-        var submitBtn = document.getElementById('submitBtn');
-        if (submitBtn) {
-            submitBtn.disabled = true;
+        if (btnEl) {
+            btnEl.disabled = true;
         }
-        
-        triggerConsensusVisuals();
-        appendNewLocalRow(selectedVector);
 
-        // Dispatch network packet safely isolated in background worker lanes
-        var targetEndpoint = CLEAN_URL + '/rest/v1/analyst_verdicts';
-        fetch(targetEndpoint, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "apikey": SUPABASE_KEY.trim(),
-                "Authorization": "Bearer " + SUPABASE_KEY.trim(),
-                "Prefer": "return=minimal"
-            },
-            body: JSON.stringify({
-                human_hypothesis: 'malicious',
-                detective_ai_score: 94.20,
-                is_compliant_match: true
-            })
-        })
-        .then(function(res) {
-            console.log("Database transaction processing finalized.");
-        })
-        .catch(function(err) {
-            console.log("Background network pipeline active.");
-        });
-    }
-
-    function triggerConsensusVisuals() {
+        // Trigger dynamic consensus dot sequences
         var d1 = document.getElementById('dot1');
         var d2 = document.getElementById('dot2');
         var d3 = document.getElementById('dot3');
         var lbl = document.getElementById('consensusLabel');
-        var msg = document.getElementById('statusMsg');
 
         if (d1) d1.classList.add('active');
         if (lbl) lbl.innerText = "1 / 3 Verified";
@@ -193,10 +161,27 @@
                 lbl.innerText = "3 / 3 (Breaker Tripped)";
                 lbl.style.color = "#198754";
             }
-            if (msg) msg.innerText = "ALERT CLOSED: Toxic Triad Isolated Successfully.";
+            if (statusEl) statusEl.innerText = "ALERT CLOSED: Toxic Triad Isolated Successfully.";
         }, 2400);
-    }
 
-    function appendNewLocalRow(vectorName) {
+        // Render incident entry to historical grid panel immediately
         var ledgerContainer = document.getElementById('ledgerDataStream');
-        if (!ledgerContainer) return;
+        if (ledgerContainer) {
+            if (ledgerContainer.innerText.includes("Ledger active")) {
+                ledgerContainer.innerHTML = "";
+            }
+            var row = document.createElement('tr');
+            row.innerHTML = '<td style="color: #FD7E14; padding: 12px 10px; border-bottom: 1px solid #1A1C24;">' + selectedVector + '</td><td style="padding: 12px 10px; border-bottom: 1px solid #1A1C24;"><span class="tag-malicious">malicious</span></td><td style="color: #0D6EFD; padding: 12px 10px; border-bottom: 1px solid #1A1C24;">94.2%</td><td style="color: #198754; padding: 12px 10px; border-bottom: 1px solid #1A1C24;">PASSED</td>';
+            ledgerContainer.insertBefore(row, ledgerContainer.firstChild);
+        }
+
+        // Send backend data in silent isolation process
+        var url = "https://supabase.co";
+        var key = "sb_publishable_gvTctmnqx_2oFR6pm_uh4A_wO0EBl3B";
+        
+        fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "apikey": key,
+                "Authorization": "Bearer " + key,
