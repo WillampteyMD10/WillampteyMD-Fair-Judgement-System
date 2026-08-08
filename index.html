@@ -1,10 +1,9 @@
-[08.08.2026 11:10] William Lamptey: <!DOCTYPE html>
+[08.08.2026 11:16] William Lamptey: <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WillampteyMD Fair Judgment System</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body { background-color: #0A0B0D; color: #E0E0E0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 40px; }
         .card { background: #12141C; padding: 30px; border-radius: 12px; border: 1px solid #222533; max-width: 600px; margin: auto; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
@@ -41,13 +40,12 @@
     const SUPABASE_KEY = "sb_publishable_gvTctmnqx_2oFR6pm_uh4A_wO0EBl3B";
 
     // ===================================================================
-    // ⚡ STANDALONE VISUAL COUNTDOWN ENGINE (Isolated from database code)
+    // ⚡ STANDALONE VISUAL COUNTDOWN ENGINE (Runs first automatically)
     // ===================================================================
     let timeLeft = 45;
     const countdownEl = document.getElementById('countdown');
     const submitBtn = document.getElementById('submitBtn');
 
-    // This loop runs with absolute autonomy immediately on page parsing
     const timer = setInterval(() => {
         timeLeft--;
         countdownEl.innerText = timeLeft;
@@ -60,36 +58,46 @@
     }, 1000);
 
     // ===================================================================
-    // 📡 LEDGER IMMUTABLE DATA STREAM (Runs ONLY when you click the button)
+    // 📡 LIGHTWEIGHT FETCH API STREAM (Bypasses external package scripts)
     // ===================================================================
     async function submitVerdict() {
         const statusEl = document.getElementById('statusMsg');
         statusEl.innerText = "Syncing with immutable cloud ledger...";
         statusEl.style.color = "#0D6EFD";
-[08.08.2026 11:10] William Lamptey: try {
-            // FIXED CAPITALIZATION: Swapped 'supabase' with the correct global 'Supabase' object
-            const supabaseClient = Supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-            
-            const { error } = await supabaseClient
-                .from('analyst_verdicts')
-                .insert([
-                    { 
-                        human_hypothesis: 'malicious',
-                        detective_ai_score: 94.20,
-                        is_compliant_match: true
-                    }
-                ]);
 
-            if (error) {
-                statusEl.innerText = "Ledger Connection Failure: " + error.message;
-                statusEl.style.color = "#DC3545";
-            } else {
+        const cleanUrl = SUPABASE_URL.trim().replace(/\/$/, "");
+        const targetEndpoint = ${cleanUrl}/rest/v1/analyst_verdicts;
+[08.08.2026 11:16] William Lamptey: const payload = {
+            human_hypothesis: 'malicious',
+            detective_ai_score: 94.20,
+            is_compliant_match: true
+        };
+
+        try {
+            // Uses browser native HTTP stream tools to commit data smoothly
+            const response = await fetch(targetEndpoint, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "apikey": SUPABASE_KEY.trim(),
+                    "Authorization": Bearer ${SUPABASE_KEY.trim()},
+                    "Prefer": "return=minimal"
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
                 statusEl.innerText = "Success! Verdict safely committed to database.";
                 statusEl.style.color = "#198754";
                 submitBtn.disabled = true;
+            } else {
+                const errData = await response.text();
+                statusEl.innerText = "Ledger Connection Failure: " + response.statusText;
+                statusEl.style.color = "#DC3545";
+                console.error(errData);
             }
         } catch (err) {
-            statusEl.innerText = "Initialization Failure: Check database credential paths.";
+            statusEl.innerText = "Network Communication Failure. Check API connection.";
             statusEl.style.color = "#DC3545";
             console.error(err);
         }
