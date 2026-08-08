@@ -47,7 +47,7 @@
         <span class="badge">"Quis custodiet ipsos custodes?" — SkepticOS Framework</span>
         
         <div class="input-group">
-            <label for="mitreClassification">Target Triad Vector (MITRE ATT&CK)</label>
+            <label for="mitreClassification">Target Triad Vector (MITRE ATT&amp;CK)</label>
             <select class="form-select" id="mitreClassification">
                 <option value="T1059.001">Execution: PowerShell (T1059.001)</option>
                 <option value="T1078">Defense Evasion: Valid Accounts (T1078)</option>
@@ -91,13 +91,14 @@
             </thead>
             <tbody id="ledgerDataStream">
                 <tr>
-                    <td colspan="4" style="color: #666; text-align: center; padding: 20px;">Establishing query feed from cloud pipeline...</td>
+                    <td colspan="4" style="color: #666; text-align: center; padding: 20px;">Ledger active. Submit a verdict to seed ledger feed history.</td>
                 </tr>
             </tbody>
         </table>
     </div>
 
 </div>
+
 <script>
     // ===================================================================
     // ⚡ 1. INDEPENDENT VISUAL COUNTDOWN ENGINE (Runs First)
@@ -126,7 +127,7 @@
     // ===================================================================
     // ✅ 2. SECURE SUPABASE CONNECTION STRINGS
     // ===================================================================
-    var SUPABASE_URL = "https://supabase.co";
+    var SUPABASE_URL = "https://cbqkkipipssgplwbuqrm.supabase.co";
     var SUPABASE_KEY = "sb_publishable_gvTctmnqx_2oFR6pm_uh4A_wO0EBl3B";
     var CLEAN_URL = SUPABASE_URL.trim().replace(/\/$/, "");
 
@@ -135,6 +136,7 @@
     // ===================================================================
     async function submitVerdict() {
         var statusEl = document.getElementById('statusMsg');
+        var selectedVector = document.getElementById('mitreClassification').value;
         if (statusEl) {
             statusEl.innerText = "Syncing with immutable cloud ledger...";
             statusEl.style.color = "#0D6EFD";
@@ -166,6 +168,7 @@
                     submitBtn.disabled = true;
                 }
                 triggerConsensusVisuals();
+                appendNewLocalRow(selectedVector);
             } else {
                 if (statusEl) {
                     statusEl.innerText = "Database connection error.";
@@ -177,6 +180,9 @@
         }
     }
 
+    // ===================================================================
+    // 🛡️ 4. VISUAL CIRCUIT BREAKER STATUS LIGHTS
+    // ===================================================================
     function triggerConsensusVisuals() {
         var d1 = document.getElementById('dot1');
         var d2 = document.getElementById('dot2');
@@ -186,93 +192,3 @@
 
         if (d1) d1.classList.add('active');
         if (lbl) lbl.innerText = "1 / 3 Verified";
-        
-        setTimeout(function() {
-            if (d2) d2.classList.add('active');
-            if (lbl) lbl.innerText = "2 / 3 Verified";
-        }, 1200);
-        
-        setTimeout(function() {
-            if (d3) d3.classList.add('active');
-            if (lbl) {
-                lbl.innerText = "3 / 3 (Breaker Tripped)";
-                lbl.style.color = "#198754";
-            }
-            if (msg) msg.innerText = "ALERT CLOSED: Toxic Triad Isolated Successfully.";
-        }, 2400);
-    }
-</script>
-
-<script>
-    // ===================================================================
-    // ⚡ 1. INDEPENDENT VISUAL COUNTDOWN ENGINE (Runs First Instantly)
-    // ===================================================================
-    let timeLeft = 45;
-    const countdownEl = document.getElementById('countdown');
-    const submitBtn = document.getElementById('submitBtn');
-
-    const timer = setInterval(() => {
-        timeLeft--;
-        if (countdownEl) countdownEl.innerText = timeLeft;
-        if (timeLeft <= 0) {
-            clearInterval(timer);
-            if (countdownEl) {
-                countdownEl.innerText = "✓";
-                countdownEl.style.color = "#198754";
-            }
-            if (submitBtn) submitBtn.disabled = false;
-        }
-    }, 1000);
-
-    // ===================================================================
-    // ✅ 2. SECURE SUPABASE CONNECTION VARIABLES
-    // ===================================================================
-    const SUPABASE_URL = "https://supabase.co";
-    const SUPABASE_KEY = "sb_publishable_gvTctmnqx_2oFR6pm_uh4A_wO0EBl3B";
-    const CLEAN_URL = SUPABASE_URL.trim().replace(/\/$/, "");
-
-    // ===================================================================
-    // 📡 3. ISOLATED HISTORICAL LEDGER FEED READER
-    // ===================================================================
-    async function fetchHistoricalLedger() {
-        const ledgerContainer = document.getElementById('ledgerDataStream');
-        if (!ledgerContainer) return;
-
-        try {
-            const targetEndpoint = `${CLEAN_URL}/rest/v1/analyst_verdicts?select=*&order=id.desc&limit=5`;
-            const response = await fetch(targetEndpoint, {
-                method: "GET",
-                headers: {
-                    "apikey": SUPABASE_KEY.trim(),
-                    "Authorization": `Bearer ${SUPABASE_KEY.trim()}`
-                }
-            });
-
-            if (response.ok) {
-                const logs = await response.json();
-                if (logs.length === 0) {
-                    ledgerContainer.innerHTML = `<tr><td colspan="4" style="color: #666; text-align: center; padding: 20px;">No records recorded in ledger database yet.</td></tr>`;
-                    return;
-                }
-                
-                ledgerContainer.innerHTML = "";
-                logs.forEach(item => {
-                    const row = document.createElement('tr');
-                    const vector = item.mitre_vector || "T1059.001";
-                    row.innerHTML = `
-                        <td style="color: #FD7E14; border-bottom: 1px solid #1A1C24; padding: 12px 10px;">${vector}</td>
-                        <td style="border-bottom: 1px solid #1A1C24; padding: 12px 10px;"><span class="tag-malicious">${item.human_hypothesis || 'malicious'}</span></td>
-                        <td style="color: #0D6EFD; border-bottom: 1px solid #1A1C24; padding: 12px 10px;">${item.detective_ai_score || 94.2}%</td>
-                        <td style="color: #198754; border-bottom: 1px solid #1A1C24; padding: 12px 10px;">PASSED</td>
-                    `;
-                    ledgerContainer.appendChild(row);
-                });
-            } else {
-                ledgerContainer.innerHTML = `<tr><td colspan="4" style="color: #666; text-align: center; padding: 20px;">Ledger stream running. Connect SELECT policy to view history grid.</td></tr>`;
-            }
-        } catch (err) {
-            console.error("Ledger acquisition bypassed safely: ", err);
-            ledgerContainer.innerHTML = `<tr><td colspan="4" style="color: #666; text-align: center; padding: 20px;">Ledger stream operating in background.</td></tr>`;
-        }
-    }
-
