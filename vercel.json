@@ -1,8 +1,4 @@
-[08.08.2026 09:39] William Lamptey: {
-  "cleanUrls": true,
-  "trailingSlash": false
-}
-[08.08.2026 09:58] William Lamptey: {
+{
   "version": 2,
   "public": true,
   "builds": [
