@@ -1,10 +1,9 @@
-[08.08.2026 10:46] William Lamptey: <!DOCTYPE html>
+[08.08.2026 11:03] William Lamptey: <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WillampteyMD Fair Judgment System</title>
-    <script src="https://jsdelivr.net"></script>
     <style>
         body { background-color: #0A0B0D; color: #E0E0E0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 40px; }
         .card { background: #12141C; padding: 30px; border-radius: 12px; border: 1px solid #222533; max-width: 600px; margin: auto; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
@@ -35,63 +34,69 @@
 
 <script>
     // ===================================================================
-    // 🛑 1. PASTE YOUR TOKENS EXACTLY INSIDE THE DOUBLE QUOTE MARKS BELOW:
+    // ✅ SYSTEM SECURITY CREDENTIALS INJECTED SUCCESSFULLY
     // ===================================================================
-    const SUPABASE_URL = "PASTE_YOUR_PROJECT_URL_HERE";"https://cbqkkipipssgplwbuqrm.supabase.co"
-    const SUPABASE_KEY = "PASTE_YOUR_PUBLISHABLE_KEY_HERE";"sb_publishable_gvTctmnqx_2oFR6pm_uh4A_wO0EBl3B"
+    const SUPABASE_URL = "https://cbqkkipipssgplwbuqrm.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_gvTctmnqx_2oFR6pm_uh4A_wO0EBl3B";
 
     // ===================================================================
-    // ⚡ 2. STANDALONE COUNTDOWN CLOCK LOOP (Runs separately to prevent freezing)
+    // ⚡ AUTOMATIC COUNTDOWN CLOCK ENGINE (Completely Isolated)
     // ===================================================================
     let timeLeft = 45;
     const countdownEl = document.getElementById('countdown');
     const submitBtn = document.getElementById('submitBtn');
 
-    const timer = setInterval(() => {
-        timeLeft--;
-        countdownEl.innerText = timeLeft;
-        if (timeLeft <= 0) {
-            clearInterval(timer);
-            countdownEl.innerText = "✓";
-            countdownEl.style.color = "#198754";
-            submitBtn.disabled = false;
-        }
-    }, 1000);
+    function startVisualClock() {
+        const timer = setInterval(() => {
+            timeLeft--;
+            countdownEl.innerText = timeLeft;
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                countdownEl.innerText = "✓";
+                countdownEl.style.color = "#198754";
+                submitBtn.disabled = false;
+            }
+        }, 1000);
+    }
+
+    // Force start countdown immediately on page load
+    startVisualClock();
 
     // ===================================================================
-    // 📡 3. SUBMISSION ROUTINE (Fires only when button is pressed)
+    // 📡 CLOUD SYNC FUNCTION (Fires only when clicking the action button)
     // ===================================================================
     async function submitVerdict() {
         const statusEl = document.getElementById('statusMsg');
         statusEl.innerText = "Connecting to immutable ledger...";
         statusEl.style.color = "#0D6EFD";
-[08.08.2026 10:46] William Lamptey: try {
-            // Initialize Supabase right inside the action click rather than on page load
-            const supabaseClient = Supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-            
-            const { data, error } = await supabaseClient
-                .from('analyst_verdicts')
-                .insert([
-                    { 
-                        human_hypothesis: 'malicious',
-                        detective_ai_score: 94.20,
-                        is_compliant_match: true
-                    }
-                ]);
+[08.08.2026 11:03] William Lamptey: // Dynamically lazy-load the database module script package right inside the click action
+        const script = document.createElement('script');
+        script.src = "https://jsdelivr.net";
+        script.onload = async () => {
+            try {
+                const cleanUrl = SUPABASE_URL.trim().replace(/\/$/, "");
+                const cleanKey = SUPABASE_KEY.trim();
+                
+                // Initialize the direct Supabase client connector
+                const supabaseClient = supabase.createClient(cleanUrl, cleanKey);
+                const { error } = await supabaseClient
+                    .from('analyst_verdicts')
+                    .insert([{ human_hypothesis: 'malicious', detective_ai_score: 94.20, is_compliant_match: true }]);
 
-            if (error) {
-                statusEl.innerText = "Ledger Connection Refused: " + error.message;
+                if (error) {
+                    statusEl.innerText = "Ledger Connection Refused: " + error.message;
+                    statusEl.style.color = "#DC3545";
+                } else {
+                    statusEl.innerText = "Success! Verdict safely committed to database.";
+                    statusEl.style.color = "#198754";
+                    submitBtn.disabled = true;
+                }
+            } catch (err) {
+                statusEl.innerText = "Key Formatting Failure: Verify configuration string quotes.";
                 statusEl.style.color = "#DC3545";
-            } else {
-                statusEl.innerText = "Success! Verdict safely committed to database.";
-                statusEl.style.color = "#198754";
-                submitBtn.disabled = true;
             }
-        } catch (err) {
-            statusEl.innerText = "Initialization Failure: Ensure your keys are pasted correctly.";
-            statusEl.style.color = "#DC3545";
-            console.error(err);
-        }
+        };
+        document.body.appendChild(script);
     }
 </script>
 
