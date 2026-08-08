@@ -1,4 +1,4 @@
-[08.08.2026 11:16] William Lamptey: <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -66,8 +66,9 @@
         statusEl.style.color = "#0D6EFD";
 
         const cleanUrl = SUPABASE_URL.trim().replace(/\/$/, "");
-        const targetEndpoint = ${cleanUrl}/rest/v1/analyst_verdicts;
-[08.08.2026 11:16] William Lamptey: const payload = {
+        const targetEndpoint = `${cleanUrl}/rest/v1/analyst_verdicts`;
+        
+        const payload = {
             human_hypothesis: 'malicious',
             detective_ai_score: 94.20,
             is_compliant_match: true
@@ -80,7 +81,7 @@
                 headers: {
                     "Content-Type": "application/json",
                     "apikey": SUPABASE_KEY.trim(),
-                    "Authorization": Bearer ${SUPABASE_KEY.trim()},
+                    "Authorization": `Bearer ${SUPABASE_KEY.trim()}`,
                     "Prefer": "return=minimal"
                 },
                 body: JSON.stringify(payload)
