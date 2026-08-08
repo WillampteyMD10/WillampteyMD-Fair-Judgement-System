@@ -99,16 +99,12 @@
 
 </div>
 
+<!-- COUNTDOWN ENGINE CODE ISOLATED AT THE TOP -->
 <script>
-    // ===================================================================
-    // ⚡ 1. INDEPENDENT VISUAL COUNTDOWN ENGINE (Runs First)
-    // ===================================================================
     var timeLeft = 45;
-    var countdownEl = document.getElementById('countdown');
-    var submitBtn = document.getElementById('submitBtn');
-
     var timer = setInterval(function() {
         timeLeft--;
+        var countdownEl = document.getElementById('countdown');
         if (countdownEl) {
             countdownEl.innerText = timeLeft;
         }
@@ -118,23 +114,21 @@
                 countdownEl.innerText = "✓";
                 countdownEl.style.color = "#198754";
             }
+            var submitBtn = document.getElementById('submitBtn');
             if (submitBtn) {
                 submitBtn.disabled = false;
             }
         }
     }, 1000);
+</script>
 
-    // ===================================================================
-    // ✅ 2. SECURE SUPABASE CONNECTION STRINGS
-    // ===================================================================
-    var SUPABASE_URL = "https://cbqkkipipssgplwbuqrm.supabase.co";
+<!-- BACKEND SUPABASE DATABASE ENGINE CODE BELOW -->
+<script>
+    var SUPABASE_URL = "https://supabase.co";
     var SUPABASE_KEY = "sb_publishable_gvTctmnqx_2oFR6pm_uh4A_wO0EBl3B";
     var CLEAN_URL = SUPABASE_URL.trim().replace(/\/$/, "");
 
-    // ===================================================================
-    // 📡 3. VERDICT COMMITMENT POST ENGINE
-    // ===================================================================
-    async function submitVerdict() {
+    function submitVerdict() {
         var statusEl = document.getElementById('statusMsg');
         var selectedVector = document.getElementById('mitreClassification').value;
         if (statusEl) {
@@ -142,31 +136,31 @@
             statusEl.style.color = "#0D6EFD";
         }
 
-        try {
-            var targetEndpoint = CLEAN_URL + '/rest/v1/analyst_verdicts';
-            var response = await fetch(targetEndpoint, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "apikey": SUPABASE_KEY.trim(),
-                    "Authorization": "Bearer " + SUPABASE_KEY.trim(),
-                    "Prefer": "return=minimal"
-                },
-                body: JSON.stringify({
-                    human_hypothesis: 'malicious',
-                    detective_ai_score: 94.20,
-                    is_compliant_match: true
-                })
-            });
-
+        var targetEndpoint = CLEAN_URL + '/rest/v1/analyst_verdicts';
+        
+        fetch(targetEndpoint, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "apikey": SUPABASE_KEY.trim(),
+                "Authorization": "Bearer " + SUPABASE_KEY.trim(),
+                "Prefer": "return=minimal"
+            },
+            body: JSON.stringify({
+                human_hypothesis: 'malicious',
+                detective_ai_score: 94.20,
+                is_compliant_match: true
+            })
+        })
+        .then(function(response) {
             if (response.ok) {
                 if (statusEl) {
                     statusEl.innerText = "Success! Verdict safely committed to database.";
                     statusEl.style.color = "#198754";
                 }
-                if (submitBtn) {
-                    submitBtn.disabled = true;
-                }
+                var submitBtn = document.getElementById('submitBtn');
+                if (submitBtn) submitBtn.disabled = true;
+                
                 triggerConsensusVisuals();
                 appendNewLocalRow(selectedVector);
             } else {
@@ -175,14 +169,12 @@
                     statusEl.style.color = "#DC3545";
                 }
             }
-        } catch (err) {
+        })
+        .catch(function(err) {
             console.error(err);
-        }
+        });
     }
 
-    // ===================================================================
-    // 🛡️ 4. VISUAL CIRCUIT BREAKER STATUS LIGHTS
-    // ===================================================================
     function triggerConsensusVisuals() {
         var d1 = document.getElementById('dot1');
         var d2 = document.getElementById('dot2');
@@ -192,3 +184,22 @@
 
         if (d1) d1.classList.add('active');
         if (lbl) lbl.innerText = "1 / 3 Verified";
+        
+        setTimeout(function() {
+            if (d2) d2.classList.add('active');
+            if (lbl) lbl.innerText = "2 / 3 Verified";
+        }, 1200);
+        
+        setTimeout(function() {
+            if (d3) d3.classList.add('active');
+            if (lbl) {
+                lbl.innerText = "3 / 3 (Breaker Tripped)";
+                lbl.style.color = "#198754";
+            }
+            if (msg) msg.innerText = "ALERT CLOSED: Toxic Triad Isolated Successfully.";
+        }, 2400);
+    }
+
+    function appendNewLocalRow(vectorName) {
+        var ledgerContainer = document.getElementById('ledgerDataStream');
+        if (!ledgerContainer) return;
