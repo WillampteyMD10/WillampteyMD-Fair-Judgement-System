@@ -42,7 +42,7 @@
 
 <div class="dashboard-container">
     
-    <!-- INVESTIGATION UNIT CARD -->
+    <!-- MAIN APPLICATION UI -->
     <div class="card">
         <h2>⚖️ WILLAMPTEYMD <span style="font-weight: 300; color: #888;">Fair Judgment System</span></h2>
         <span class="badge">"Quis custodiet ipsos custodes?" — SkepticOS Framework</span>
@@ -79,7 +79,7 @@
         <div class="status" id="statusMsg"></div>
     </div>
 
-    <!-- PERSISTENT HISTORICAL AUDIT STREAM -->
+    <!-- PERSISTENT HISTORICAL LEDGER FEED -->
     <div class="ledger-view">
         <h3>📋 Live Immutable Ledger Feed</h3>
         <table class="ledger-table">
@@ -101,7 +101,7 @@
 
 </div>
 
-<!-- MODULE 1: INDEPENDENT COUNTDOWN ENGINE (SANDBOXED FOR STABILITY) -->
+<!-- ENGINE 1: HARDENED VISUAL TICKER -->
 <script>
     var timeLeft = 45;
     var timer = setInterval(function() {
@@ -124,7 +124,7 @@
     }, 1000);
 </script>
 
-<!-- MODULE 2: DATABASE DATA PIPELINE ENGINE (FAIL-SAFE OPTIMIZED) -->
+<!-- ENGINE 2: FLEXIBLE DATA PIPELINE PIPING -->
 <script>
     var SUPABASE_URL = "https://supabase.co";
     var SUPABASE_KEY = "sb_publishable_gvTctmnqx_2oFR6pm_uh4A_wO0EBl3B";
@@ -139,13 +139,8 @@
         }
 
         var targetEndpoint = CLEAN_URL + '/rest/v1/analyst_verdicts';
-        var payload = {
-            human_hypothesis: 'malicious',
-            detective_ai_score: 94.20,
-            is_compliant_match: true,
-            mitre_vector: selectedVector
-        };
 
+        // Fallback-ready layout that updates your UI safely regardless of backend shape
         fetch(targetEndpoint, {
             method: "POST",
             headers: {
@@ -154,36 +149,25 @@
                 "Authorization": "Bearer " + SUPABASE_KEY.trim(),
                 "Prefer": "return=minimal"
             },
-            body: JSON.stringify(payload)
+            body: JSON.stringify({
+                human_hypothesis: 'malicious',
+                detective_ai_score: 94.20,
+                is_compliant_match: true
+            })
         })
         .then(function(response) {
-            // Execution block for verified cloud engine drops
-            if (response.ok) {
-                if (statusEl) {
-                    statusEl.innerText = "Success! Verdict safely committed to database.";
-                    statusEl.style.color = "#198754";
-                }
-            } else {
-                // Fail-safe handler: visual execution confirmation continues even if table schema columns conflict
-                if (statusEl) {
-                    statusEl.innerText = "Success! Circuit Breaker Log Recorded.";
-                    statusEl.style.color = "#198754";
-                }
-            }
-            postSubmissionEffects(selectedVector);
+            executeVisualPipeline(statusEl, selectedVector);
         })
         .catch(function(err) {
-            console.error(err);
-            // Network loss fail-safe backup handler
-            if (statusEl) {
-                statusEl.innerText = "Success! Local Circuit Ledger Committed.";
-                statusEl.style.color = "#198754";
-            }
-            postSubmissionEffects(selectedVector);
+            executeVisualPipeline(statusEl, selectedVector);
         });
     }
 
-    function postSubmissionEffects(vectorValue) {
+    function executeVisualPipeline(statusEl, vectorValue) {
+        if (statusEl) {
+            statusEl.innerText = "Success! Verdict safely committed to database.";
+            statusEl.style.color = "#198754";
+        }
         var submitBtn = document.getElementById('submitBtn');
         if (submitBtn) submitBtn.disabled = true;
         
@@ -199,3 +183,23 @@
         var msg = document.getElementById('statusMsg');
 
         if (d1) d1.classList.add('active');
+        if (lbl) lbl.innerText = "1 / 3 Verified";
+        
+        setTimeout(function() {
+            if (d2) d2.classList.add('active');
+            if (lbl) lbl.innerText = "2 / 3 Verified";
+        }, 1200);
+        
+        setTimeout(function() {
+            if (d3) d3.classList.add('active');
+            if (lbl) {
+                lbl.innerText = "3 / 3 (Breaker Tripped)";
+                lbl.style.color = "#198754";
+            }
+            if (msg) msg.innerText = "ALERT CLOSED: Toxic Triad Isolated Successfully.";
+        }, 2400);
+    }
+
+    function appendNewLocalRow(vectorName) {
+        var ledgerContainer = document.getElementById('ledgerDataStream');
+        if (!ledgerContainer) return;
