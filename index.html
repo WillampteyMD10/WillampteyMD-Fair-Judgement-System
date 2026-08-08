@@ -1,9 +1,10 @@
-[08.08.2026 11:03] William Lamptey: <!DOCTYPE html>
+[08.08.2026 11:10] William Lamptey: <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WillampteyMD Fair Judgment System</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body { background-color: #0A0B0D; color: #E0E0E0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 40px; }
         .card { background: #12141C; padding: 30px; border-radius: 12px; border: 1px solid #222533; max-width: 600px; margin: auto; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
@@ -34,69 +35,64 @@
 
 <script>
     // ===================================================================
-    // ✅ SYSTEM SECURITY CREDENTIALS INJECTED SUCCESSFULLY
+    // ✅ VERIFIED SUPABASE CREDENTIALS DIRECT INJECTION
     // ===================================================================
     const SUPABASE_URL = "https://cbqkkipipssgplwbuqrm.supabase.co";
     const SUPABASE_KEY = "sb_publishable_gvTctmnqx_2oFR6pm_uh4A_wO0EBl3B";
 
     // ===================================================================
-    // ⚡ AUTOMATIC COUNTDOWN CLOCK ENGINE (Completely Isolated)
+    // ⚡ STANDALONE VISUAL COUNTDOWN ENGINE (Isolated from database code)
     // ===================================================================
     let timeLeft = 45;
     const countdownEl = document.getElementById('countdown');
     const submitBtn = document.getElementById('submitBtn');
 
-    function startVisualClock() {
-        const timer = setInterval(() => {
-            timeLeft--;
-            countdownEl.innerText = timeLeft;
-            if (timeLeft <= 0) {
-                clearInterval(timer);
-                countdownEl.innerText = "✓";
-                countdownEl.style.color = "#198754";
-                submitBtn.disabled = false;
-            }
-        }, 1000);
-    }
-
-    // Force start countdown immediately on page load
-    startVisualClock();
+    // This loop runs with absolute autonomy immediately on page parsing
+    const timer = setInterval(() => {
+        timeLeft--;
+        countdownEl.innerText = timeLeft;
+        if (timeLeft <= 0) {
+            clearInterval(timer);
+            countdownEl.innerText = "✓";
+            countdownEl.style.color = "#198754";
+            submitBtn.disabled = false;
+        }
+    }, 1000);
 
     // ===================================================================
-    // 📡 CLOUD SYNC FUNCTION (Fires only when clicking the action button)
+    // 📡 LEDGER IMMUTABLE DATA STREAM (Runs ONLY when you click the button)
     // ===================================================================
     async function submitVerdict() {
         const statusEl = document.getElementById('statusMsg');
-        statusEl.innerText = "Connecting to immutable ledger...";
+        statusEl.innerText = "Syncing with immutable cloud ledger...";
         statusEl.style.color = "#0D6EFD";
-[08.08.2026 11:03] William Lamptey: // Dynamically lazy-load the database module script package right inside the click action
-        const script = document.createElement('script');
-        script.src = "https://jsdelivr.net";
-        script.onload = async () => {
-            try {
-                const cleanUrl = SUPABASE_URL.trim().replace(/\/$/, "");
-                const cleanKey = SUPABASE_KEY.trim();
-                
-                // Initialize the direct Supabase client connector
-                const supabaseClient = supabase.createClient(cleanUrl, cleanKey);
-                const { error } = await supabaseClient
-                    .from('analyst_verdicts')
-                    .insert([{ human_hypothesis: 'malicious', detective_ai_score: 94.20, is_compliant_match: true }]);
+[08.08.2026 11:10] William Lamptey: try {
+            // FIXED CAPITALIZATION: Swapped 'supabase' with the correct global 'Supabase' object
+            const supabaseClient = Supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            
+            const { error } = await supabaseClient
+                .from('analyst_verdicts')
+                .insert([
+                    { 
+                        human_hypothesis: 'malicious',
+                        detective_ai_score: 94.20,
+                        is_compliant_match: true
+                    }
+                ]);
 
-                if (error) {
-                    statusEl.innerText = "Ledger Connection Refused: " + error.message;
-                    statusEl.style.color = "#DC3545";
-                } else {
-                    statusEl.innerText = "Success! Verdict safely committed to database.";
-                    statusEl.style.color = "#198754";
-                    submitBtn.disabled = true;
-                }
-            } catch (err) {
-                statusEl.innerText = "Key Formatting Failure: Verify configuration string quotes.";
+            if (error) {
+                statusEl.innerText = "Ledger Connection Failure: " + error.message;
                 statusEl.style.color = "#DC3545";
+            } else {
+                statusEl.innerText = "Success! Verdict safely committed to database.";
+                statusEl.style.color = "#198754";
+                submitBtn.disabled = true;
             }
-        };
-        document.body.appendChild(script);
+        } catch (err) {
+            statusEl.innerText = "Initialization Failure: Check database credential paths.";
+            statusEl.style.color = "#DC3545";
+            console.error(err);
+        }
     }
 </script>
 
