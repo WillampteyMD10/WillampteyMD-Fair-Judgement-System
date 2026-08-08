@@ -1,4 +1,4 @@
-[08.08.2026 10:32] William Lamptey: <!DOCTYPE html>
+[08.08.2026 10:46] William Lamptey: <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -34,26 +34,19 @@
 </div>
 
 <script>
-    // === PASTE YOUR SUPABASE TOKENS DIRECTLY BETWEEN THE QUOTES BELOW ===
+    // ===================================================================
+    // 🛑 1. PASTE YOUR TOKENS EXACTLY INSIDE THE DOUBLE QUOTE MARKS BELOW:
+    // ===================================================================
     const SUPABASE_URL = "PASTE_YOUR_PROJECT_URL_HERE";"https://cbqkkipipssgplwbuqrm.supabase.co"
     const SUPABASE_KEY = "PASTE_YOUR_PUBLISHABLE_KEY_HERE";"sb_publishable_gvTctmnqx_2oFR6pm_uh4A_wO0EBl3B"
+
     // ===================================================================
-
-    // Safe error wrapper to prevent countdown freeze if keys are misconfigured
-    let supabaseClient = null;
-    try {
-        if (SUPABASE_URL !== "PASTE_YOUR_PROJECT_URL_HERE" && SUPABASE_KEY !== "PASTE_YOUR_PUBLISHABLE_KEY_HERE") {
-            supabaseClient = Supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        }
-    } catch (e) {
-        console.error("Supabase config error:", e);
-    }
-
+    // ⚡ 2. STANDALONE COUNTDOWN CLOCK LOOP (Runs separately to prevent freezing)
+    // ===================================================================
     let timeLeft = 45;
     const countdownEl = document.getElementById('countdown');
     const submitBtn = document.getElementById('submitBtn');
 
-    // Safe standalone timer loop execution sequence
     const timer = setInterval(() => {
         timeLeft--;
         countdownEl.innerText = timeLeft;
@@ -65,33 +58,39 @@
         }
     }, 1000);
 
+    // ===================================================================
+    // 📡 3. SUBMISSION ROUTINE (Fires only when button is pressed)
+    // ===================================================================
     async function submitVerdict() {
         const statusEl = document.getElementById('statusMsg');
-        statusEl.innerText = "Syncing with immutable cloud ledger...";
+        statusEl.innerText = "Connecting to immutable ledger...";
         statusEl.style.color = "#0D6EFD";
+[08.08.2026 10:46] William Lamptey: try {
+            // Initialize Supabase right inside the action click rather than on page load
+            const supabaseClient = Supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            
+            const { data, error } = await supabaseClient
+                .from('analyst_verdicts')
+                .insert([
+                    { 
+                        human_hypothesis: 'malicious',
+                        detective_ai_score: 94.20,
+                        is_compliant_match: true
+                    }
+                ]);
 
-        if (!supabaseClient) {
-            statusEl.innerText = "Ledger Error: Supabase keys not set up inside the code file yet.";
+            if (error) {
+                statusEl.innerText = "Ledger Connection Refused: " + error.message;
+                statusEl.style.color = "#DC3545";
+            } else {
+                statusEl.innerText = "Success! Verdict safely committed to database.";
+                statusEl.style.color = "#198754";
+                submitBtn.disabled = true;
+            }
+        } catch (err) {
+            statusEl.innerText = "Initialization Failure: Ensure your keys are pasted correctly.";
             statusEl.style.color = "#DC3545";
-            return;
-        }
-[08.08.2026 10:32] William Lamptey: const { data, error } = await supabaseClient
-            .from('analyst_verdicts')
-            .insert([
-                { 
-                    human_hypothesis: 'malicious',
-                    detective_ai_score: 94.20,
-                    is_compliant_match: true
-                }
-            ]);
-
-        if (error) {
-            statusEl.innerText = "Ledger connection failure: " + error.message;
-            statusEl.style.color = "#DC3545";
-        } else {
-            statusEl.innerText = "Success! Verdict safely committed to database.";
-            statusEl.style.color = "#198754";
-            submitBtn.disabled = true;
+            console.error(err);
         }
     }
 </script>
