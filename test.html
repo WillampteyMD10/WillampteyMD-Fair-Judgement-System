@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnostic Sync Test</title>
+    <style>
+        body { background-color: #0A0B0D; color: #E0E0E0; font-family: sans-serif; margin: 40px; text-align: center; }
+        .card { background: #12141C; padding: 30px; border-radius: 12px; border: 1px solid #222533; max-width: 400px; margin: auto; }
+        .timer { font-size: 48px; font-weight: bold; color: #0D6EFD; margin: 20px 0; font-family: monospace; }
+        .btn { display: block; width: 100%; padding: 14px; background: #0D6EFD; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        .btn:disabled { background: #1C2030; color: #4A4F66; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Diagnostic Engine Test</h2>
+    <p>Testing core browser execution mechanics...</p>
+    <div class="timer" id="testCountdown">45</div>
+    <button class="btn" id="testBtn" disabled onclick="testClick()">Awaiting Diagnostic Unlock</button>
+</div>
+
+<script>
+    let secondsLeft = 45;
+    const displayEl = document.getElementById('testCountdown');
+    const actionBtn = document.getElementById('testBtn');
+
+    const runtimeLoop = setInterval(() => {
+        secondsLeft--;
+        if (displayEl) displayEl.innerText = secondsLeft;
+        
+        if (secondsLeft <= 0) {
+            clearInterval(runtimeLoop);
+            if (displayEl) {
+                displayEl.innerText = "✓";
+                displayEl.style.color = "#198754";
+            }
+            if (actionBtn) {
+                actionBtn.disabled = false;
+                actionBtn.innerText = "Execute Simple Local Alert";
+            }
+        }
+    }, 1000);
+
+    function testClick() {
+        alert("Core visual mechanics are 100% operational!");
+    }
+</script>
+
+</body>
+</html>
